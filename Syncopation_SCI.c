@@ -134,7 +134,7 @@ void SCI_UpdatePacketFloat(uint16_t index, float data)
 #define DAB_PHS_DEC     0x29
 #define DAB_PHS_SET     0x2A
 
-#define LOGGING_TRIG    0x40
+#define LOGGING_TRIG    0x50
 //////////////////////////////////////////////////////////////////////////
 // End of receive message macro definitions.
 //////////////////////////////////////////////////////////////////////////

@@ -266,6 +266,6 @@ void Syncopation_Init(void)
 
     EpwmInit();
     AdcInit();
-    XintInit();
-    CpuTimerInit();
+//    XintInit();
+//    CpuTimerInit();
 }

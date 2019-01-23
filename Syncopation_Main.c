@@ -7,6 +7,7 @@
 #include "F28x_Project.h"
 #include "Syncopation_SCI.h"
 #include "Syncopation_Data.h"
+#include "Syncopation_Pwm.h"
 
 #define DSP_LED_1_OFF       GpioDataRegs.GPDSET.bit.GPIO109 = 1
 #define DSP_LED_1_ON        GpioDataRegs.GPDCLEAR.bit.GPIO109 = 1
@@ -25,11 +26,15 @@ extern void Syncopation_Init(void);
 Uint16 *fpga_led = (Uint16 *)0x00100100;
 
 extern Uint16 iac_reading;
+extern Uint16 dab_prd;
+extern int16 dab_phs;
 
 void main(void) {
     InitSysCtrl();
     Syncopation_Init();
     SCI_Config();
+
+    Dab_DIS();
 
     PieCtrlRegs.PIECTRL.bit.ENPIE = 1;  // Enable the PIE block
     IER = M_INT1 | M_INT3 | M_INT8;
@@ -53,6 +58,8 @@ void main(void) {
         DELAY_US(10000);
 
         SCI_UpdatePacketFloat(0, (float)iac_reading);
+        SCI_UpdatePacketInt16(0, dab_prd);
+        SCI_UpdatePacketInt16(1, dab_phs);
 
         SCI_SendPacket();
     }

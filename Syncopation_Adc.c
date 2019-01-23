@@ -7,6 +7,7 @@
 
 #include "F28x_Project.h"
 #include "Syncopation_Data.h"
+#include "Syncopation_Pwm.h"
 
 #define SAMPLE_WINDOW 49
 #define ADC_TRIG_SELECT  5  // EPWM1 SOCA
@@ -265,26 +266,7 @@ interrupt void ControlLoop(void)
     AdcResult[22] = AdcdResultRegs.ADCRESULT4;
     AdcResult[23] = AdcdResultRegs.ADCRESULT5;
 
-    vac_reading = AdcResult[1];
-    iac_reading = AdcResult[3];
-
-    Vac = -0.49082395 * vac_reading + 1009.033;
-    Iac = -0.010835907 * iac_reading + 22.119420183;
-
-    if(fault_status == 0)
-    {
-        EPwm1Regs.CMPA.bit.CMPA = 1000;
-        EPwm2Regs.CMPA.bit.CMPA = 1000;
-        EPwm3Regs.CMPA.bit.CMPA = 1000;
-        EPwm4Regs.CMPA.bit.CMPA = 1000;
-    }
-    else
-    {
-        EPwm1Regs.CMPA.bit.CMPA = 125;
-        EPwm2Regs.CMPA.bit.CMPA = 125;
-        EPwm3Regs.CMPA.bit.CMPA = 125;
-        EPwm4Regs.CMPA.bit.CMPA = 125;
-    }
+    Dab_Update();
 
 
     AdcaRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;	//Clear ADCINT1 flag reinitialize for next SOC

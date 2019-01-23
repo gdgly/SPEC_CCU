@@ -6,7 +6,7 @@
  */
 
 #include "F2837xS_Device.h"
-//#include "MSST_GlobalFunctions.h"
+#include "Syncopation_Pwm.h"
 //#include "MSST_Pwm.h"
 
 ///////////////////////////////////////////////////
@@ -185,14 +185,14 @@ interrupt void SCI_SerialPortReceiveISR(void)
 //    case PWM_EN:        Pwm_EN();           break;
 //    case REC_DIS:       Rectifier_DIS();    break;
 //    case REC_EN:        Rectifier_EN();     break;
-//    case DAB_PRI_DIS:   DabPri_DIS();       break;
-//    case DAB_PRI_EN:    DabPri_EN();        break;
-//    case DAB_FREQ_INC:  DabFreq_INC();      break;
-//    case DAB_FREQ_DEC:  DabFreq_DEC();      break;
+    case DAB_PRI_DIS:   Dab_DIS();       break;
+    case DAB_PRI_EN:    Dab_EN();        break;
+    case DAB_FREQ_INC:  DabFreq_INC();      break;
+    case DAB_FREQ_DEC:  DabFreq_DEC();      break;
 //    case DAB_FREQ_SET:  DabFreq_SET(arg_2); break;
-//    case DAB_PHS_INC:   DabPhs_INC();       break;
-//    case DAB_PHS_DEC:   DabPhs_DEC();       break;
-//    case DAB_PHS_SET:   DabPhs_SET(arg_1);  break;
+    case DAB_PHS_INC:   DabPhs_INC();       break;
+    case DAB_PHS_DEC:   DabPhs_DEC();       break;
+    case DAB_PHS_SET:   DabPhs_SET(arg_1);  break;
 //    case LOGGING_TRIG:  DataLog_state = 1;  break;
     default: break;
     }

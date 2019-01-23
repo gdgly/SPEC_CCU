@@ -7,21 +7,18 @@
 
 #include "F28x_Project.h"
 
-#define PWM_PERIOD      4000
+#define PWM_PRD      4000
+#define PWM_DB       100
 
 void Epwm1Init()
 {
-    EPwm1Regs.TBPRD = PWM_PERIOD - 1;
+    EPwm1Regs.TBPRD = PWM_PRD;
 
     EPwm1Regs.TBCTL.bit.SYNCOSEL = 0;
     EPwm1Regs.TBCTL.bit.PHSEN = 0;
     EPwm1Regs.TBCTL.bit.HSPCLKDIV = 0;
 
-    EPwm1Regs.AQCTLA.bit.CAU = 1; // Clear output A at TBCTR = CMPA
-    EPwm1Regs.AQCTLA.bit.ZRO = 2; // Set output A at TBCTR = 0
-    EPwm1Regs.CMPA.bit.CMPA = 1000;
-
-    EPwm1Regs.TBCTL.bit.CTRMODE = 0; // Count-up mode, start the counter
+    EPwm1Regs.TBCTL.bit.CTRMODE = 2; // Count-up mode, start the counter
 
     EPwm1Regs.ETSEL.bit.SOCASEL = 1; // SOCA at counter equals to 0
     EPwm1Regs.ETSEL.bit.SOCAEN = 1;  // Enable SOCA
@@ -30,50 +27,57 @@ void Epwm1Init()
 
 void Epwm2Init()
 {
-    EPwm2Regs.TBPRD = PWM_PERIOD - 1;
+    EPwm2Regs.TBPRD = PWM_PRD;
 
     EPwm2Regs.TBCTL.bit.SYNCOSEL = 0;
     EPwm2Regs.TBCTL.bit.PHSEN = 1;
     EPwm2Regs.TBCTL.bit.HSPCLKDIV = 0;
 
-    EPwm2Regs.AQCTLA.bit.CAU = 1; // Clear output A at TBCTR = CMPA
-    EPwm2Regs.AQCTLA.bit.ZRO = 2; // Set output A at TBCTR = 0
-    EPwm2Regs.CMPA.bit.CMPA = 1000;
-    EPwm2Regs.TBPHS.bit.TBPHS = 1000;
+    EPwm2Regs.AQCTLA.bit.CAU = 2;
+    EPwm2Regs.AQCTLA.bit.CAD = 1;
 
-    EPwm2Regs.TBCTL.bit.CTRMODE = 0; // Count-up mode, start the counter
+    EPwm2Regs.DBRED.bit.DBRED = PWM_DB-1;
+    EPwm2Regs.DBFED.bit.DBFED = PWM_DB-1;
+    EPwm2Regs.DBCTL.bit.IN_MODE = 0;
+    EPwm2Regs.DBCTL.bit.POLSEL = 2;
+    EPwm2Regs.DBCTL.bit.OUT_MODE = 3;
+
+    EPwm2Regs.CMPA.bit.CMPA = 2000;
+
+    EPwm2Regs.TBCTL.bit.CTRMODE = 2;
+
+    EALLOW;
+    EPwm2Regs.TZCTL.bit.TZA = TZ_FORCE_LO;
+    EPwm2Regs.TZCTL.bit.TZB = TZ_FORCE_LO;
+    EDIS;
 }
 
 void Epwm3Init()
 {
-    EPwm3Regs.TBPRD = PWM_PERIOD - 1;
+    EPwm3Regs.TBPRD = PWM_PRD;
 
     EPwm3Regs.TBCTL.bit.SYNCOSEL = 0;
     EPwm3Regs.TBCTL.bit.PHSEN = 1;
     EPwm3Regs.TBCTL.bit.HSPCLKDIV = 0;
 
-    EPwm3Regs.AQCTLA.bit.CAU = 1; // Clear output A at TBCTR = CMPA
-    EPwm3Regs.AQCTLA.bit.ZRO = 2; // Set output A at TBCTR = 0
-    EPwm3Regs.CMPA.bit.CMPA = 1000;
-    EPwm3Regs.TBPHS.bit.TBPHS = 2000;
+    EPwm3Regs.AQCTLA.bit.CAU = 2;
+    EPwm3Regs.AQCTLA.bit.CAD = 1;
 
-    EPwm3Regs.TBCTL.bit.CTRMODE = 0; // Count-up mode, start the counter
-}
+    EPwm3Regs.DBRED.bit.DBRED = PWM_DB-1;
+    EPwm3Regs.DBFED.bit.DBFED = PWM_DB-1;
+    EPwm3Regs.DBCTL.bit.IN_MODE = 0;
+    EPwm3Regs.DBCTL.bit.POLSEL = 2;
+    EPwm3Regs.DBCTL.bit.OUT_MODE = 3;
+    EPwm3Regs.DBCTL.bit.OUTSWAP = 3;
 
-void Epwm4Init()
-{
-    EPwm4Regs.TBPRD = PWM_PERIOD - 1;
+    EPwm3Regs.CMPA.bit.CMPA = 2000;
 
-    EPwm4Regs.TBCTL.bit.SYNCOSEL = 0;
-    EPwm4Regs.TBCTL.bit.PHSEN = 1;
-    EPwm4Regs.TBCTL.bit.HSPCLKDIV = 0;
+    EPwm3Regs.TBCTL.bit.CTRMODE = 2;
 
-    EPwm4Regs.AQCTLA.bit.CAU = 1; // Clear output A at TBCTR = CMPA
-    EPwm4Regs.AQCTLA.bit.ZRO = 2; // Set output A at TBCTR = 0
-    EPwm4Regs.CMPA.bit.CMPA = 1000;
-    EPwm4Regs.TBPHS.bit.TBPHS = 3000;
-
-    EPwm4Regs.TBCTL.bit.CTRMODE = 0; // Count-up mode, start the counter
+    EALLOW;
+    EPwm3Regs.TZCTL.bit.TZA = TZ_FORCE_LO;
+    EPwm3Regs.TZCTL.bit.TZB = TZ_FORCE_LO;
+    EDIS;
 }
 
 void EpwmInit()
@@ -81,5 +85,66 @@ void EpwmInit()
     Epwm1Init();
     Epwm2Init();
     Epwm3Init();
-    Epwm4Init();
 }
+
+void Dab_EN()
+{
+    EALLOW;
+    EPwm2Regs.TZCLR.bit.OST = 1;
+    EPwm3Regs.TZCLR.bit.OST = 1;
+    EDIS;
+}
+
+void Dab_DIS()
+{
+    EALLOW;
+    EPwm2Regs.TZFRC.bit.OST = 1;
+    EPwm3Regs.TZFRC.bit.OST = 1;
+    EDIS;
+}
+
+Uint16 dab_prd = PWM_PRD;
+int16 dab_phs = 0;
+
+void DabFreq_INC()
+{
+    if(dab_prd > 1000)
+        dab_prd-=10;
+}
+
+void DabFreq_DEC()
+{
+    if(dab_prd < 10000)
+        dab_prd+=10;
+}
+
+void DabPhs_INC()
+{
+    if(dab_phs > -1000)
+        dab_phs--;
+}
+
+void DabPhs_DEC()
+{
+    if(dab_phs < 1000)
+        dab_phs++;
+}
+
+void DabPhs_SET(int16 arg)
+{
+    if((dab_phs > -1000) && (dab_phs < 1000))
+        dab_phs = arg;
+}
+
+void Dab_Update()
+{
+    EPwm1Regs.TBPRD = dab_prd;
+    EPwm2Regs.TBPRD = dab_prd;
+    EPwm3Regs.TBPRD = dab_prd;
+
+    Uint16 cmp = dab_prd >> 1;
+
+    EPwm2Regs.CMPA.bit.CMPA = cmp;
+    EPwm3Regs.CMPA.bit.CMPA = cmp;
+}
+

@@ -37,7 +37,7 @@ void main(void) {
     Dab_DIS();
 
     PieCtrlRegs.PIECTRL.bit.ENPIE = 1;  // Enable the PIE block
-    IER = M_INT1 | M_INT3 | M_INT8;
+    IER = M_INT1 | M_INT3 | M_INT9;
 //    IER |= M_INT13;
     FPGA_RESET;
 

@@ -224,6 +224,7 @@ Uint16 AdcResult[24];
 Uint16 TempSensor;
 
 Uint16 vac_reading = 0;
+Uint16 vdc_reading = 0;
 Uint16 iac_reading = 0;
 
 extern float SinglePhasePLL(float Vac, float *Freq, float *Vac_amp);
@@ -265,6 +266,7 @@ interrupt void ControlLoop(void)
     AdcResult[22] = AdcdResultRegs.ADCRESULT4;
     AdcResult[23] = AdcdResultRegs.ADCRESULT5;
 
+    vdc_reading = AdcResult[0];
     vac_reading = AdcResult[1];
     iac_reading = AdcResult[3];
 

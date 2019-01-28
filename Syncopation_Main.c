@@ -25,6 +25,8 @@ extern void Syncopation_Init(void);
 Uint16 *fpga_led    =   (Uint16 *)0x00100010;
 Uint16 *fpga_relay  =   (Uint16 *)0x00100040;
 
+extern Uint16 vac_reading;
+extern Uint16 vdc_reading;
 extern Uint16 iac_reading;
 
 void main(void) {
@@ -51,9 +53,11 @@ void main(void) {
 
     while(1)
     {
-        DELAY_US(10000);
+        DELAY_US(2000);
 
-        SCI_UpdatePacketFloat(0, (float)iac_reading);
+        SCI_UpdatePacketFloat(0, (float)vac_reading);
+        SCI_UpdatePacketFloat(1, (float)vdc_reading);
+        SCI_UpdatePacketFloat(2, (float)iac_reading);
 
         SCI_SendPacket();
     }
@@ -95,7 +99,6 @@ void main(void) {
 #pragma CODE_SECTION(CpuTimerIsr, ".TI.ramfunc");
 interrupt void CpuTimerIsr()
 {
-
     CpuTimer1Regs.TCR.bit.TIF = 1;
 }
 

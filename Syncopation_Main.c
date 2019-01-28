@@ -21,8 +21,9 @@
 
 extern void Syncopation_Init(void);
 
-
-Uint16 *fpga_led = (Uint16 *)0x00100100;
+// EMIF1_CS2n - Program + Data  ||  2M × 16  ||  0x0010 0000  ||  0x002F FFFF  ||
+Uint16 *fpga_led    =   (Uint16 *)0x00100010;
+Uint16 *fpga_relay  =   (Uint16 *)0x00100040;
 
 extern Uint16 iac_reading;
 
@@ -32,7 +33,7 @@ void main(void) {
     SCI_Config();
 
     PieCtrlRegs.PIECTRL.bit.ENPIE = 1;  // Enable the PIE block
-    IER = M_INT1 | M_INT3 | M_INT8;
+    IER = M_INT1 | M_INT3 | M_INT9;
 //    IER |= M_INT13;
     FPGA_RESET;
 
@@ -96,5 +97,25 @@ interrupt void CpuTimerIsr()
 {
 
     CpuTimer1Regs.TCR.bit.TIF = 1;
+}
+
+void Relay_mainClose()
+{
+    *fpga_relay |= 1;
+}
+
+void Relay_mainOpen()
+{
+    *fpga_relay &= (~1);
+}
+
+void Relay_SsrClose()
+{
+    *fpga_relay |= 2;
+}
+
+void Relay_SsrOpen()
+{
+    *fpga_relay &= (~2);
 }
 

@@ -291,7 +291,7 @@ interrupt void ControlLoop(void)
 	PieCtrlRegs.PIEACK.bit.ACK1 = 1;
 }
 
-interrupt void Xint1Isr()
+void Xint1Isr()
 {
 //    fault_status = 1;
     PieCtrlRegs.PIEACK.bit.ACK1 = 1;

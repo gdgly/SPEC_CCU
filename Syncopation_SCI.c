@@ -6,7 +6,7 @@
  */
 
 #include "F2837xS_Device.h"
-//#include "MSST_GlobalFunctions.h"
+#include "Syncopation_Global.h"
 //#include "MSST_Pwm.h"
 
 ///////////////////////////////////////////////////
@@ -135,6 +135,13 @@ void SCI_UpdatePacketFloat(uint16_t index, float data)
 #define DAB_PHS_SET     0x2A
 
 #define LOGGING_TRIG    0x50
+
+
+#define RELAY_1_CLOSE   0x70
+#define RELAY_1_OPEN    0x71
+#define RELAY_2_CLOSE   0x72
+#define RELAY_2_OPEN    0x73
+
 //////////////////////////////////////////////////////////////////////////
 // End of receive message macro definitions.
 //////////////////////////////////////////////////////////////////////////
@@ -181,7 +188,7 @@ interrupt void SCI_SerialPortReceiveISR(void)
 
 
     switch(cmd) {
-    case 'a':       GpioDataRegs.GPDTOGGLE.bit.GPIO110 = 1;          break;
+//    case 'a':       GpioDataRegs.GPDTOGGLE.bit.GPIO110 = 1;          break;
 //    case PWM_EN:        Pwm_EN();           break;
 //    case REC_DIS:       Rectifier_DIS();    break;
 //    case REC_EN:        Rectifier_EN();     break;
@@ -194,6 +201,11 @@ interrupt void SCI_SerialPortReceiveISR(void)
 //    case DAB_PHS_DEC:   DabPhs_DEC();       break;
 //    case DAB_PHS_SET:   DabPhs_SET(arg_1);  break;
 //    case LOGGING_TRIG:  DataLog_state = 1;  break;
+
+    case RELAY_1_CLOSE: Relay_mainClose();  break;
+    case RELAY_1_OPEN:  Relay_mainOpen();   break;
+    case RELAY_2_CLOSE: Relay_SsrClose();   break;
+    case RELAY_2_OPEN:  Relay_SsrOpen();    break;
     default: break;
     }
 

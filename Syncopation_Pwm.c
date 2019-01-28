@@ -83,3 +83,32 @@ void EpwmInit()
     Epwm3Init();
     Epwm4Init();
 }
+
+void FaultBroadcast()
+{
+    EPwm1Regs.CMPA.bit.CMPA = 40;
+    EPwm2Regs.CMPA.bit.CMPA = 40;
+    EPwm3Regs.CMPA.bit.CMPA = 40;
+    EPwm4Regs.CMPA.bit.CMPA = 40;
+}
+
+void ChbStandby()
+{
+    EPwm1Regs.CMPA.bit.CMPA = 80;
+    EPwm2Regs.CMPA.bit.CMPA = 80;
+    EPwm3Regs.CMPA.bit.CMPA = 80;
+    EPwm4Regs.CMPA.bit.CMPA = 80;
+}
+
+void ChbSetDuty(duty)
+{
+    if(duty > 0.9)
+        duty = 0.9;
+    if(duty < -0.9)
+        duty = -0.9;
+    Uint16 cmp_value = (Uint16)(2000 * (1 + duty)) + 100;
+    EPwm1Regs.CMPA.bit.CMPA = cmp_value;
+    EPwm2Regs.CMPA.bit.CMPA = cmp_value;
+    EPwm3Regs.CMPA.bit.CMPA = cmp_value;
+    EPwm4Regs.CMPA.bit.CMPA = cmp_value;
+}

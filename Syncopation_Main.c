@@ -29,15 +29,14 @@ extern Uint16 iac_reading;
 extern Uint16 dab_prd;
 extern int16 dab_phs;
 
+extern volatile struct SCI_REGS *sci_ch;
+
 void main(void) {
     InitSysCtrl();
     Syncopation_Init();
-    SCI_Config();
-
     Dab_DIS();
-
     PieCtrlRegs.PIECTRL.bit.ENPIE = 1;  // Enable the PIE block
-    IER = M_INT1 | M_INT3 | M_INT9;
+    IER = M_INT1 | M_INT3 | M_INT8;
 //    IER |= M_INT13;
     FPGA_RESET;
 
@@ -45,6 +44,7 @@ void main(void) {
     DSP_LED_1_OFF;
     DSP_LED_2_OFF;
 
+    SCI_Config();
     EINT;
 
     CpuTimer1Regs.TCR.bit.TIF = 1;
@@ -53,16 +53,13 @@ void main(void) {
     DSP_LED_1_OFF;
     DSP_LED_2_OFF;
 
-    Uint16 led_count = 0;
-
     while(1)
     {
-        led_count++;
-        if(led_count>=100)
-        {
-            led_count = 0;
-            DSP_LED_2_TGL;
-        }
+//        if(PieCtrlRegs.PIEIFR8.bit.INTx5)
+//            DSP_LED_1_ON;
+//
+//        if(sci_ch->SCIFFRX.bit.RXFFINT)
+//            DSP_LED_2_ON;
 
         DELAY_US(10000);
 
@@ -71,6 +68,8 @@ void main(void) {
         SCI_UpdatePacketInt16(1, dab_phs);
 
         SCI_SendPacket();
+
+
     }
 }
 

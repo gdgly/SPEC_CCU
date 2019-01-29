@@ -13,16 +13,16 @@
 // Choose channel here
 
 // Channel C (Fiber optic)
-//#define RX_ISR  PieVectTable.SCIC_RX_INT
-//#define RX_ACK  PieCtrlRegs.PIEACK.bit.ACK8
-//#define RX_IEN  PieCtrlRegs.PIEIER8.bit.INTx5
-//volatile struct SCI_REGS *sci_ch = &ScicRegs;
+#define RX_ISR  PieVectTable.SCIC_RX_INT
+#define RX_ACK  PieCtrlRegs.PIEACK.bit.ACK8
+#define RX_IEN  PieCtrlRegs.PIEIER8.bit.INTx5
+volatile struct SCI_REGS *sci_ch = &ScicRegs;
 
 // Channel B (USB)
-#define RX_ISR  PieVectTable.SCIB_RX_INT
-#define RX_ACK  PieCtrlRegs.PIEACK.bit.ACK9
-#define RX_IEN  PieCtrlRegs.PIEIER9.bit.INTx3
-volatile struct SCI_REGS *sci_ch = &ScibRegs;
+//#define RX_ISR  PieVectTable.SCIB_RX_INT
+//#define RX_ACK  PieCtrlRegs.PIEACK.bit.ACK9
+//#define RX_IEN  PieCtrlRegs.PIEIER9.bit.INTx3
+//volatile struct SCI_REGS *sci_ch = &ScibRegs;
 ///////////////////////////////////////////////////
 
 #define PACKET_INT16_NUM 8

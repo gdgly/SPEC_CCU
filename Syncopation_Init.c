@@ -250,8 +250,6 @@ void XintInit()
     EDIS;
 }
 
-//extern void SCI_Config();
-
 void Syncopation_Init(void)
 {
     EALLOW;
@@ -260,7 +258,6 @@ void Syncopation_Init(void)
     EDIS;
 
     GPIO_setPinMuxConfig();
-//    SCI_Config();
 
     DINT;
     InterruptInit();
@@ -268,6 +265,6 @@ void Syncopation_Init(void)
 
     EpwmInit();
     AdcInit();
-//    XintInit();
+    XintInit();
 //    CpuTimerInit();
 }

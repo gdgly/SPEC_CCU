@@ -14,7 +14,7 @@ void Epwm1Init()
 {
     EPwm1Regs.TBPRD = PWM_PRD;
 
-    EPwm1Regs.TBCTL.bit.SYNCOSEL = 0;
+    EPwm1Regs.TBCTL.bit.SYNCOSEL = 1;
     EPwm1Regs.TBCTL.bit.PHSEN = 0;
     EPwm1Regs.TBCTL.bit.HSPCLKDIV = 0;
 
@@ -146,5 +146,16 @@ void Dab_Update()
 
     EPwm2Regs.CMPA.bit.CMPA = cmp;
     EPwm3Regs.CMPA.bit.CMPA = cmp;
+
+    if(dab_phs >= 0)
+    {
+        EPwm3Regs.TBPHS.bit.TBPHS = dab_phs;
+        EPwm3Regs.TBCTL.bit.PHSDIR = 0;
+    }
+    else
+    {
+        EPwm3Regs.TBPHS.bit.TBPHS = -dab_phs;
+        EPwm3Regs.TBCTL.bit.PHSDIR = 1;
+    }
 }
 

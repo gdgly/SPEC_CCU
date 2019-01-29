@@ -276,6 +276,7 @@ interrupt void ControlLoop(void)
 interrupt void Xint1Isr()
 {
 //    fault_status = 1;
+    Dab_DIS();
     PieCtrlRegs.PIEACK.bit.ACK1 = 1;
 }
 

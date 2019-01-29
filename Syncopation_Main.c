@@ -23,7 +23,7 @@
 extern void Syncopation_Init(void);
 
 
-Uint16 *fpga_led = (Uint16 *)0x00100100;
+Uint16 *fpga_led = (Uint16 *)0x00100010;
 
 extern Uint16 iac_reading;
 extern Uint16 dab_prd;
@@ -53,8 +53,17 @@ void main(void) {
     DSP_LED_1_OFF;
     DSP_LED_2_OFF;
 
+    Uint16 led_count = 0;
+
     while(1)
     {
+        led_count++;
+        if(led_count>=100)
+        {
+            led_count = 0;
+            DSP_LED_2_TGL;
+        }
+
         DELAY_US(10000);
 
         SCI_UpdatePacketFloat(0, (float)iac_reading);

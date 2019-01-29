@@ -78,6 +78,12 @@ void SCI_Config(void)
     sci_ch->SCIFFTX.all = 0xE040;
     sci_ch->SCIFFRX.all = 0x6070;
     sci_ch->SCICTL1.all = 0x0023;
+
+    sci_ch->SCIFFRX.bit.RXFFOVRCLR = 1;
+    sci_ch->SCIFFRX.bit.RXFIFORESET = 0;
+    sci_ch->SCIFFRX.bit.RXFIFORESET = 1;
+    sci_ch->SCIFFRX.bit.RXFFINTCLR = 1;
+    RX_ACK = 1;
 }
 
 #pragma CODE_SECTION(SendByte, ".TI.ramfunc");
@@ -123,8 +129,8 @@ void SCI_UpdatePacketFloat(uint16_t index, float data)
 #define PWM_EN          0x11
 #define REC_DIS         0x12
 #define REC_EN          0x13
-#define DAB_PRI_DIS     0x14
-#define DAB_PRI_EN      0x15
+#define DAB_DIS     0x14
+#define DAB_EN      0x15
 
 #define DAB_FREQ_INC    0x20
 #define DAB_FREQ_DEC    0x21
@@ -181,12 +187,12 @@ interrupt void SCI_SerialPortReceiveISR(void)
 
 
     switch(cmd) {
-    case 'a':       GpioDataRegs.GPDTOGGLE.bit.GPIO110 = 1;          break;
+//    case PWM_DIS:       Pwm_Dis();           break;
 //    case PWM_EN:        Pwm_EN();           break;
 //    case REC_DIS:       Rectifier_DIS();    break;
 //    case REC_EN:        Rectifier_EN();     break;
-    case DAB_PRI_DIS:   Dab_DIS();       break;
-    case DAB_PRI_EN:    Dab_EN();        break;
+    case DAB_DIS:   Dab_DIS();       break;
+    case DAB_EN:    Dab_EN();        break;
     case DAB_FREQ_INC:  DabFreq_INC();      break;
     case DAB_FREQ_DEC:  DabFreq_DEC();      break;
 //    case DAB_FREQ_SET:  DabFreq_SET(arg_2); break;

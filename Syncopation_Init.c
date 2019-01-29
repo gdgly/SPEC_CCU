@@ -250,6 +250,7 @@ void XintInit()
     EDIS;
 }
 
+//extern void SCI_Config();
 
 void Syncopation_Init(void)
 {
@@ -259,6 +260,7 @@ void Syncopation_Init(void)
     EDIS;
 
     GPIO_setPinMuxConfig();
+//    SCI_Config();
 
     DINT;
     InterruptInit();

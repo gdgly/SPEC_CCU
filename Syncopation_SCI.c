@@ -146,6 +146,9 @@ void SCI_UpdatePacketFloat(uint16_t index, float data)
 #define LOAD_CLOSE      0x74
 #define LOAD_OPEN       0x75
 #define TRIGGER         0x78
+
+#define CHB_ON          0x7A
+#define CHB_OFF         0x7B
 //////////////////////////////////////////////////////////////////////////
 // End of receive message macro definitions.
 //////////////////////////////////////////////////////////////////////////
@@ -153,6 +156,8 @@ void SCI_UpdatePacketFloat(uint16_t index, float data)
 extern void setState(int16_t arg);
 
 extern void Chb_Trigger();
+extern void Chb_on();
+extern void Chb_off();
 
 #pragma CODE_SECTION(SCI_SerialPortReceiveISR, ".TI.ramfunc");
 interrupt void SCI_SerialPortReceiveISR(void)
@@ -220,6 +225,8 @@ interrupt void SCI_SerialPortReceiveISR(void)
     case LOAD_CLOSE:    Load_Close();       break;
     case LOAD_OPEN:     Load_Open();        break;
     case TRIGGER:       Chb_Trigger();      break;
+    case CHB_ON:        Chb_on();           break;
+    case CHB_OFF:       Chb_off();          break;
     default: break;
     }
 

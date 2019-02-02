@@ -36,6 +36,7 @@ extern Uint16 chb_state;
 extern Uint16 fault_prepare_state;
 
 extern float Grid_Freq;
+extern float Iac_mag;
 
 void main(void) {
     InitSysCtrl();
@@ -63,19 +64,19 @@ void main(void) {
     {
         DELAY_US(4000);
 
-//        SCI_UpdatePacketFloat(0, Vac);
-//        SCI_UpdatePacketFloat(1, Iac);
-//        SCI_UpdatePacketFloat(2, Vdc_sec);
-//        SCI_UpdatePacketFloat(3, Grid_Freq);
-//
-//        SCI_UpdatePacketInt16(0, *((Uint16 *)0x00100021));
-//        SCI_UpdatePacketInt16(1, fault_value);
-//        SCI_UpdatePacketInt16(2, chb_state);
-//        SCI_UpdatePacketInt16(3, fault_prepare_state);
+        SCI_UpdatePacketFloat(0, Vac);
+        SCI_UpdatePacketFloat(1, Iac);
+        SCI_UpdatePacketFloat(2, Vdc_sec);
+        SCI_UpdatePacketFloat(3, Iac_mag);
 
-//        SCI_SendPacket();
+        SCI_UpdatePacketInt16(0, *((Uint16 *)0x00100021));
+        SCI_UpdatePacketInt16(1, fault_value);
+        SCI_UpdatePacketInt16(2, chb_state);
+        SCI_UpdatePacketInt16(3, fault_prepare_state);
 
-        DataLog_ISR();
+        SCI_SendPacket();
+
+//        DataLog_ISR();
     }
 }
 

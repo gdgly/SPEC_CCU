@@ -164,12 +164,26 @@ void Chb_Trigger()
     trigger_count = 0;
 }
 
+void Chb_on()
+{
+    if(chb_state == 1)
+        chb_state = 2;
+    ResetState();
+}
+
+void Chb_off()
+{
+    if(chb_state == 2)
+        chb_state = 1;
+    ResetState();
+}
+
 float ChbControl(float Vac, float Vdc_sec, float Iac)
 {
     Grid_Angle = SinglePhasePLL(Vac, &Grid_Freq, &Grid_Amplitude);
     Vdc_filter = voltage_sogi(Vdc_sec, Grid_Freq);
 
-
+    Vac_ref = 0;
 
     if(chb_state == 2)
     {
@@ -184,20 +198,20 @@ float ChbControl(float Vac, float Vdc_sec, float Iac)
         Vac_ref = current_loop(Iac_ref, Iac, Grid_Freq);
     }
 
-    if(trigger_state == 1)
-    {
-        DataLog_Logging(trigger_count, Vdc_sec, (Vac - Vac_ref), Iac, (Iac_ref - Iac));
-
-        trigger_count++;
-        if(trigger_count>=trigger_limit)
-        {
-            if(chb_state!=3)
-                chb_state = 1;
-            trigger_state = 0;
-            ResetState();
-            DataLog_StartToSend(trigger_limit);
-        }
-    }
+//    if(trigger_state == 1)
+//    {
+//        DataLog_Logging(trigger_count, Vdc_sec, (Vac - Vac_ref), Iac, (Iac_ref - Iac));
+//
+//        trigger_count++;
+//        if(trigger_count>=trigger_limit)
+//        {
+//            if(chb_state!=3)
+//                chb_state = 1;
+//            trigger_state = 0;
+//            ResetState();
+//            DataLog_StartToSend(trigger_limit);
+//        }
+//    }
     return Vac_ref;
 }
 

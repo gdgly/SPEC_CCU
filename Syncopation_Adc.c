@@ -7,6 +7,7 @@
 
 #include "F28x_Project.h"
 #include "Syncopation_Data.h"
+#include "Syncopation_Pwm.h"
 
 #define SAMPLE_WINDOW 49
 #define ADC_TRIG_SELECT  5  // EPWM1 SOCA
@@ -229,14 +230,27 @@ Uint16 iac_reading = 0;
 
 extern float SinglePhasePLL(float Vac, float *Freq, float *Vac_amp);
 
-float Vac,Iac;
-float Freq, Vac_amp;
-float Theta;
+float Vac,Iac,Vdc_sec;
 
 Uint16 index = 0;
-Uint16 state = 0;
 
-Uint16 fault_status = 0;
+Uint16 chb_state = 1;
+#define STATE_CHB_INIT      0
+#define STATE_CHB_STANDBY   1
+#define STATE_CHB_NORMAL    2
+#define STATE_CHB_FAULT     3
+
+Uint16 fault_prepare_state = 0;
+
+void ChbInit();
+void ChbStandby();
+void ChbSetDuty(float duty);
+void ChbFault();
+
+float Chb_Vac_ref = 0;
+extern float ChbControl(float Vac, float Vdc_sec, float Iac);
+
+extern void Relay_mainOpen();
 
 interrupt void ControlLoop(void)
 {
@@ -270,32 +284,74 @@ interrupt void ControlLoop(void)
     vac_reading = AdcResult[1];
     iac_reading = AdcResult[3];
 
-    Vac = -0.49082395 * vac_reading + 1009.033;
-    Iac = -0.010835907 * iac_reading + 22.119420183;
+    Vac = -0.49082395 * vac_reading + 1008.833;
+    Iac = -0.010835907 * iac_reading + 22.111420183;
+//    Iac = 0.010835907 * iac_reading - 22.111420183;
+    Vdc_sec = -0.49082395 * vdc_reading + 994.733;
 
-    if(fault_status == 0)
-    {
-        EPwm1Regs.CMPA.bit.CMPA = 1000;
-        EPwm2Regs.CMPA.bit.CMPA = 1000;
-        EPwm3Regs.CMPA.bit.CMPA = 1000;
-        EPwm4Regs.CMPA.bit.CMPA = 1000;
-    }
-    else
-    {
-        EPwm1Regs.CMPA.bit.CMPA = 125;
-        EPwm2Regs.CMPA.bit.CMPA = 125;
-        EPwm3Regs.CMPA.bit.CMPA = 125;
-        EPwm4Regs.CMPA.bit.CMPA = 125;
-    }
+    Chb_Vac_ref = ChbControl(Vac, Vdc_sec, Iac);
 
+    switch(chb_state)
+    {
+    case STATE_CHB_INIT:    ChbInit();          break;
+    case STATE_CHB_STANDBY: ChbStandby();       break;
+    case STATE_CHB_NORMAL:  ChbSetDuty(Chb_Vac_ref);    break;
+    case STATE_CHB_FAULT:   ChbFault();         break;
+    default: ChbFault();  break;
+    }
 
     AdcaRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;	//Clear ADCINT1 flag reinitialize for next SOC
 	PieCtrlRegs.PIEACK.bit.ACK1 = 1;
 }
 
-void Xint1Isr()
+Uint16 fault_value = 0;
+interrupt void Xint1Isr()
 {
-//    fault_status = 1;
+    fault_value = *((Uint16 *)0x00100021);
+    chb_state = STATE_CHB_FAULT;
     PieCtrlRegs.PIEACK.bit.ACK1 = 1;
 }
 
+void setState(int16_t arg)
+{
+    chb_state = (Uint16)arg;
+}
+
+void ChbInit()
+{
+    EPwm1Regs.CMPA.bit.CMPA = 80;
+    EPwm2Regs.CMPA.bit.CMPA = 80;
+    EPwm3Regs.CMPA.bit.CMPA = 80;
+    EPwm4Regs.CMPA.bit.CMPA = 80;
+}
+
+void ChbStandby()
+{
+    EPwm1Regs.CMPA.bit.CMPA = 80;
+    EPwm2Regs.CMPA.bit.CMPA = 80;
+    EPwm3Regs.CMPA.bit.CMPA = 80;
+    EPwm4Regs.CMPA.bit.CMPA = 80;
+}
+
+void ChbSetDuty(float vac_ref)
+{
+    if(vac_ref > 600)
+        vac_ref = 600;
+    if(vac_ref < -600)
+        vac_ref = -600;
+    Uint16 cmp_value = (Uint16)(2000 + vac_ref * 3) + 100;
+    EPwm1Regs.CMPA.bit.CMPA = cmp_value;
+    EPwm2Regs.CMPA.bit.CMPA = cmp_value;
+    EPwm3Regs.CMPA.bit.CMPA = cmp_value;
+    EPwm4Regs.CMPA.bit.CMPA = cmp_value;
+}
+
+void ChbFault()
+{
+
+    Relay_mainOpen();
+    EPwm1Regs.CMPA.bit.CMPA = 40;
+    EPwm2Regs.CMPA.bit.CMPA = 40;
+    EPwm3Regs.CMPA.bit.CMPA = 40;
+    EPwm4Regs.CMPA.bit.CMPA = 40;
+}

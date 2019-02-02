@@ -12,5 +12,9 @@ extern void Relay_mainClose();
 extern void Relay_mainOpen();
 extern void Relay_SsrClose();
 extern void Relay_SsrOpen();
+extern void Load_Close();
+extern void Load_Open();
+extern void FaultDetection_EN();
+extern void FaultDetection_DIS();
 
 #endif /* SYNCOPATION_GLOBAL_H_ */

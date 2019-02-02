@@ -13,16 +13,16 @@
 // Choose channel here
 
 // Channel C (Fiber optic)
-//#define RX_ISR  PieVectTable.SCIC_RX_INT
-//#define RX_ACK  PieCtrlRegs.PIEACK.bit.ACK8
-//#define RX_IEN  PieCtrlRegs.PIEIER8.bit.INTx5
-//volatile struct SCI_REGS *sci_ch = &ScicRegs;
+#define RX_ISR  PieVectTable.SCIC_RX_INT
+#define RX_ACK  PieCtrlRegs.PIEACK.bit.ACK8
+#define RX_IEN  PieCtrlRegs.PIEIER8.bit.INTx5
+volatile struct SCI_REGS *sci_ch = &ScicRegs;
 
 // Channel B (USB)
-#define RX_ISR  PieVectTable.SCIB_RX_INT
-#define RX_ACK  PieCtrlRegs.PIEACK.bit.ACK9
-#define RX_IEN  PieCtrlRegs.PIEIER9.bit.INTx3
-volatile struct SCI_REGS *sci_ch = &ScibRegs;
+//#define RX_ISR  PieVectTable.SCIB_RX_INT
+//#define RX_ACK  PieCtrlRegs.PIEACK.bit.ACK9
+//#define RX_IEN  PieCtrlRegs.PIEIER9.bit.INTx3
+//volatile struct SCI_REGS *sci_ch = &ScibRegs;
 ///////////////////////////////////////////////////
 
 #define PACKET_INT16_NUM 8
@@ -136,15 +136,23 @@ void SCI_UpdatePacketFloat(uint16_t index, float data)
 
 #define LOGGING_TRIG    0x50
 
+#define FAULT_DET_EN    0x60
+#define FAULT_DET_DIS   0x61
 
 #define RELAY_1_CLOSE   0x70
 #define RELAY_1_OPEN    0x71
 #define RELAY_2_CLOSE   0x72
 #define RELAY_2_OPEN    0x73
-
+#define LOAD_CLOSE      0x74
+#define LOAD_OPEN       0x75
+#define TRIGGER         0x78
 //////////////////////////////////////////////////////////////////////////
 // End of receive message macro definitions.
 //////////////////////////////////////////////////////////////////////////
+
+extern void setState(int16_t arg);
+
+extern void Chb_Trigger();
 
 #pragma CODE_SECTION(SCI_SerialPortReceiveISR, ".TI.ramfunc");
 interrupt void SCI_SerialPortReceiveISR(void)
@@ -200,12 +208,18 @@ interrupt void SCI_SerialPortReceiveISR(void)
 //    case DAB_PHS_INC:   DabPhs_INC();       break;
 //    case DAB_PHS_DEC:   DabPhs_DEC();       break;
 //    case DAB_PHS_SET:   DabPhs_SET(arg_1);  break;
-//    case LOGGING_TRIG:  DataLog_state = 1;  break;
+    case LOGGING_TRIG:  setState(arg_1);    break;
+
+    case FAULT_DET_EN:  FaultDetection_EN();  break;
+    case FAULT_DET_DIS: FaultDetection_DIS(); break;
 
     case RELAY_1_CLOSE: Relay_mainClose();  break;
     case RELAY_1_OPEN:  Relay_mainOpen();   break;
     case RELAY_2_CLOSE: Relay_SsrClose();   break;
     case RELAY_2_OPEN:  Relay_SsrOpen();    break;
+    case LOAD_CLOSE:    Load_Close();       break;
+    case LOAD_OPEN:     Load_Open();        break;
+    case TRIGGER:       Chb_Trigger();      break;
     default: break;
     }
 

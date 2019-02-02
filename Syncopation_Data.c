@@ -57,6 +57,7 @@ void DataLog_SendSample()
 
 void DataLog_StartToSend(Uint16 length)
 {
+    DataLog_index = 0;
     DataLog_send_size = length;
     DataLog_state = 1;
 }

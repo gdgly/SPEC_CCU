@@ -246,7 +246,7 @@ void XintInit()
     InputXbarRegs.INPUT4SELECT = 27;
     PieVectTable.XINT1_INT = &Xint1Isr;
     PieCtrlRegs.PIEIER1.bit.INTx4 = 1;
-    XintRegs.XINT1CR.bit.ENABLE = 1;
+//    XintRegs.XINT1CR.bit.ENABLE = 1;
     EDIS;
 }
 

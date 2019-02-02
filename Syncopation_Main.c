@@ -28,6 +28,14 @@ Uint16 *fpga_relay  =   (Uint16 *)0x00100040;
 extern Uint16 vac_reading;
 extern Uint16 vdc_reading;
 extern Uint16 iac_reading;
+extern float Iac;
+extern float Vac;
+extern float Vdc_sec;
+extern Uint16 fault_value;
+extern Uint16 chb_state;
+extern Uint16 fault_prepare_state;
+
+extern float Grid_Freq;
 
 void main(void) {
     InitSysCtrl();
@@ -35,7 +43,7 @@ void main(void) {
     SCI_Config();
 
     PieCtrlRegs.PIECTRL.bit.ENPIE = 1;  // Enable the PIE block
-    IER = M_INT1 | M_INT3 | M_INT9;
+    IER = M_INT1 | M_INT3 | M_INT8;
 //    IER |= M_INT13;
     FPGA_RESET;
 
@@ -53,13 +61,21 @@ void main(void) {
 
     while(1)
     {
-        DELAY_US(2000);
+        DELAY_US(4000);
 
-        SCI_UpdatePacketFloat(0, (float)vac_reading);
-        SCI_UpdatePacketFloat(1, (float)vdc_reading);
-        SCI_UpdatePacketFloat(2, (float)iac_reading);
+//        SCI_UpdatePacketFloat(0, Vac);
+//        SCI_UpdatePacketFloat(1, Iac);
+//        SCI_UpdatePacketFloat(2, Vdc_sec);
+//        SCI_UpdatePacketFloat(3, Grid_Freq);
+//
+//        SCI_UpdatePacketInt16(0, *((Uint16 *)0x00100021));
+//        SCI_UpdatePacketInt16(1, fault_value);
+//        SCI_UpdatePacketInt16(2, chb_state);
+//        SCI_UpdatePacketInt16(3, fault_prepare_state);
 
-        SCI_SendPacket();
+//        SCI_SendPacket();
+
+        DataLog_ISR();
     }
 }
 
@@ -114,6 +130,10 @@ void Relay_mainOpen()
 
 void Relay_SsrClose()
 {
+    EALLOW;
+    XintRegs.XINT1CR.bit.ENABLE = 1;
+    EDIS;
+    fault_prepare_state = 1;
     *fpga_relay |= 2;
 }
 
@@ -122,3 +142,28 @@ void Relay_SsrOpen()
     *fpga_relay &= (~2);
 }
 
+void Load_Close()
+{
+    *fpga_relay |= 8;
+}
+
+void Load_Open()
+{
+    *fpga_relay &= (~8);
+}
+
+void FaultDetection_EN()
+{
+    EALLOW;
+    XintRegs.XINT1CR.bit.ENABLE = 1;
+    EDIS;
+    fault_prepare_state = 1;
+}
+
+void FaultDetection_DIS()
+{
+    EALLOW;
+    XintRegs.XINT1CR.bit.ENABLE = 0;
+    EDIS;
+    fault_prepare_state = 0;
+}

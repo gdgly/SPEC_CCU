@@ -23,6 +23,7 @@ extern void Syncopation_Init(void);
 
 // EMIF1_CS2n - Program + Data  ||  2M × 16  ||  0x0010 0000  ||  0x002F FFFF  ||
 Uint16 *fpga_led    =   (Uint16 *)0x00100010;
+Uint16 *fb_test    =   (Uint16 *)0x00100015;
 Uint16 *fpga_relay  =   (Uint16 *)0x00100040;
 
 extern Uint16 vac_reading;
@@ -36,7 +37,7 @@ extern Uint16 chb_state;
 extern Uint16 fault_prepare_state;
 
 extern float Grid_Freq;
-extern float Iac_mag;
+extern float Reactive_current;
 
 void main(void) {
     InitSysCtrl();
@@ -57,7 +58,7 @@ void main(void) {
     CpuTimer1Regs.TCR.bit.TIF = 1;
     CpuTimer1Regs.TCR.all = 0x4000;
 
-    DSP_LED_1_OFF;
+    DSP_LED_1_ON;
     DSP_LED_2_OFF;
 
     while(1)
@@ -67,7 +68,7 @@ void main(void) {
         SCI_UpdatePacketFloat(0, Vac);
         SCI_UpdatePacketFloat(1, Iac);
         SCI_UpdatePacketFloat(2, Vdc_sec);
-        SCI_UpdatePacketFloat(3, Iac_mag);
+        SCI_UpdatePacketFloat(3, Reactive_current);
 
         SCI_UpdatePacketInt16(0, *((Uint16 *)0x00100021));
         SCI_UpdatePacketInt16(1, fault_value);

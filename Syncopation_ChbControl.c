@@ -14,6 +14,8 @@ float Grid_Freq = 0;
 float Grid_Angle = 0;
 float Grid_Amplitude = 0;
 
+float Reactive_current = 0;
+
 
 
 extern float SinglePhasePLL(float Vac, float *Freq, float *Vac_amp);
@@ -33,6 +35,15 @@ float vdc_h0_k = 100;
 //    vdc_sogi_k = arg_2;
 //    vdc_h0_k = arg_3;
 //}
+
+void reactive_current_set(float arg_2)
+{
+    Reactive_current = arg_2;
+    if(Reactive_current > 5)
+        Reactive_current = 5;
+    if(Reactive_current < -5)
+        Reactive_current = -5;
+}
 
 #pragma CODE_SECTION(voltage_sogi, ".TI.ramfunc");
 float voltage_sogi(float Vdc, float Freq)
@@ -69,8 +80,8 @@ float voltage_sogi(float Vdc, float Freq)
 float v_loop_inte = 0;
 float v_loop_error = 0;
 
-float v_loop_kp = 0.04;
-float v_loop_ki = 0.4;
+float v_loop_kp = 0.06;
+float v_loop_ki = 0.6;
 
 //float v_loop_kp = 0.05;
 //float v_loop_ki = 0.5;
@@ -94,10 +105,10 @@ float voltage_loop(float Vdc_ref, float Vdc_filtered)
 }
 
 // I_loop_variables
-float i_kp = 40;
-float i_kr = 100;
-//float i_kp = 4;
-//float i_kr = 10;
+//float i_kp = 40;
+//float i_kr = 100;
+float i_kp = 20;
+float i_kr = 50;
 float i_sogi_x1 = 0;
 float i_sogi_x2 = 0;
 float i_dc_offset_inte = 0;
@@ -193,7 +204,7 @@ float ChbControl(float Vac, float Vdc_sec, float Iac)
             Iac_mag = 15;
 
 
-        Iac_ref = Iac_mag * __cospuf32(Grid_Angle);
+        Iac_ref = Iac_mag * __cospuf32(Grid_Angle) + Reactive_current * __sinpuf32(Grid_Angle);
 
         Vac_ref = current_loop(Iac_ref, Iac, Grid_Freq);
     }

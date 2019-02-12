@@ -214,7 +214,7 @@ float ChbControl(float Vac, float Vdc_sec, float Iac)
 
 //    if(trigger_state == 1)
 //    {
-//        DataLog_Logging(trigger_count, Vdc_sec, (Vac - Vac_ref), Iac, (Iac_ref - Iac));
+//        DataLog_Logging(trigger_count, Vac, Vac_ref, Iac, Iac_ref);
 //
 //        trigger_count++;
 //        if(trigger_count>=trigger_limit)

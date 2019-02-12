@@ -13,7 +13,7 @@ void Epwm1Init()
 {
     EPwm1Regs.TBPRD = PWM_PERIOD - 1;
 
-    EPwm1Regs.TBCTL.bit.SYNCOSEL = 0;
+    EPwm1Regs.TBCTL.bit.SYNCOSEL = 1;
     EPwm1Regs.TBCTL.bit.PHSEN = 0;
     EPwm1Regs.TBCTL.bit.HSPCLKDIV = 0;
 

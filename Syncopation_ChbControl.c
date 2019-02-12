@@ -85,6 +85,9 @@ float v_loop_ki = 0.6;
 
 //float v_loop_kp = 0.05;
 //float v_loop_ki = 0.5;
+
+//float v_loop_kp = 0.04;
+//float v_loop_ki = 0.4;
 //
 //void v_loop_pi(float arg_2, float arg_3)
 //{
@@ -143,7 +146,7 @@ float current_loop(float Iac_ref, float Iac, float Freq)
     return Vac_ref;
 }
 
-float Vdc_ref = 240;
+float Vdc_ref = 270;
 float Iac_ref = 0;
 float Iac_mag = 0;
 float Vac_ref = 0;
@@ -191,7 +194,7 @@ void Chb_off()
 
 float ChbControl(float Vac, float Vdc_sec, float Iac)
 {
-    Grid_Angle = SinglePhasePLL(Vac, &Grid_Freq, &Grid_Amplitude);
+    Grid_Angle = SinglePhasePLL(Vac*0.25, &Grid_Freq, &Grid_Amplitude);
     Vdc_filter = voltage_sogi(Vdc_sec, Grid_Freq);
 
     Vac_ref = 0;

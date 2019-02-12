@@ -39,7 +39,7 @@ void Epwm2Init()
     EPwm2Regs.AQCTLA.bit.CAU = 1; // Clear output A at TBCTR = CMPA
     EPwm2Regs.AQCTLA.bit.ZRO = 2; // Set output A at TBCTR = 0
     EPwm2Regs.CMPA.bit.CMPA = 1000;
-    EPwm2Regs.TBPHS.bit.TBPHS = 1000;
+    EPwm2Regs.TBPHS.bit.TBPHS = 1333;
 
     EPwm2Regs.TBCTL.bit.CTRMODE = 0; // Count-up mode, start the counter
 }
@@ -55,7 +55,7 @@ void Epwm3Init()
     EPwm3Regs.AQCTLA.bit.CAU = 1; // Clear output A at TBCTR = CMPA
     EPwm3Regs.AQCTLA.bit.ZRO = 2; // Set output A at TBCTR = 0
     EPwm3Regs.CMPA.bit.CMPA = 1000;
-    EPwm3Regs.TBPHS.bit.TBPHS = 2000;
+    EPwm3Regs.TBPHS.bit.TBPHS = 2667;
 
     EPwm3Regs.TBCTL.bit.CTRMODE = 0; // Count-up mode, start the counter
 }

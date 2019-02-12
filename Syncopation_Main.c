@@ -36,6 +36,8 @@ extern Uint16 fault_value;
 extern Uint16 chb_state;
 extern Uint16 fault_prepare_state;
 
+extern float omega_h1;
+
 extern float Grid_Freq;
 extern float Reactive_current;
 
@@ -68,7 +70,7 @@ void main(void) {
         SCI_UpdatePacketFloat(0, Vac);
         SCI_UpdatePacketFloat(1, Iac);
         SCI_UpdatePacketFloat(2, Vdc_sec);
-        SCI_UpdatePacketFloat(3, Reactive_current);
+        SCI_UpdatePacketFloat(3, omega_h1);
 
         SCI_UpdatePacketInt16(0, *((Uint16 *)0x00100021));
         SCI_UpdatePacketInt16(1, fault_value);

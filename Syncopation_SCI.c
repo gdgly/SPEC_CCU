@@ -141,9 +141,15 @@ void SCI_UpdatePacketFloat(uint16_t index, float data)
 #define DAB_PHS_SET     0x2A
 
 #define LOGGING_TRIG    0x50
+
+#define RELAY_1_CLOSE   0x70
+#define RELAY_1_OPEN    0x71
 //////////////////////////////////////////////////////////////////////////
 // End of receive message macro definitions.
 //////////////////////////////////////////////////////////////////////////
+
+extern void Relay_mainClose();
+extern void Relay_mainOpen();
 
 #pragma CODE_SECTION(SCI_SerialPortReceiveISR, ".TI.ramfunc");
 interrupt void SCI_SerialPortReceiveISR(void)
@@ -200,6 +206,8 @@ interrupt void SCI_SerialPortReceiveISR(void)
     case DAB_PHS_DEC:   DabPhs_DEC();       break;
     case DAB_PHS_SET:   DabPhs_SET(arg_1);  break;
 //    case LOGGING_TRIG:  DataLog_state = 1;  break;
+    case RELAY_1_CLOSE: Relay_mainClose();  break;
+    case RELAY_1_OPEN:  Relay_mainOpen();   break;
     default: break;
     }
 

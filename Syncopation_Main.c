@@ -23,7 +23,8 @@
 extern void Syncopation_Init(void);
 
 
-Uint16 *fpga_led = (Uint16 *)0x00100010;
+Uint16 *fpga_led    =    (Uint16 *)0x00100010;
+Uint16 *fpga_relay  =    (Uint16 *)0x00100040;
 
 extern Uint16 iac_reading;
 extern Uint16 dab_prd;
@@ -46,6 +47,8 @@ void main(void) {
 
     SCI_Config();
     EINT;
+
+    Dab_EN();
 
     CpuTimer1Regs.TCR.bit.TIF = 1;
     CpuTimer1Regs.TCR.all = 0x4000;
@@ -111,5 +114,15 @@ interrupt void CpuTimerIsr()
 {
 
     CpuTimer1Regs.TCR.bit.TIF = 1;
+}
+
+void Relay_mainClose()
+{
+    *fpga_relay |= 1;
+}
+
+void Relay_mainOpen()
+{
+    *fpga_relay &= (~1);
 }
 

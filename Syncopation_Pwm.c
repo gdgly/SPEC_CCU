@@ -7,8 +7,9 @@
 
 #include "F28x_Project.h"
 
-#define PWM_PRD      4000
-#define PWM_DB       100
+#define PWM_PRD      2220
+#define PWM_CMP      1110
+#define PWM_DB       200
 
 void Epwm1Init()
 {
@@ -17,6 +18,17 @@ void Epwm1Init()
     EPwm1Regs.TBCTL.bit.SYNCOSEL = 1;
     EPwm1Regs.TBCTL.bit.PHSEN = 0;
     EPwm1Regs.TBCTL.bit.HSPCLKDIV = 0;
+
+    EPwm1Regs.AQCTLA.bit.CAU = 2;
+    EPwm1Regs.AQCTLA.bit.CAD = 1;
+
+    EPwm1Regs.DBRED.bit.DBRED = PWM_DB-1;
+    EPwm1Regs.DBFED.bit.DBFED = PWM_DB-1;
+    EPwm1Regs.DBCTL.bit.IN_MODE = 0;
+    EPwm1Regs.DBCTL.bit.POLSEL = 2;
+    EPwm1Regs.DBCTL.bit.OUT_MODE = 3;
+
+    EPwm1Regs.CMPA.bit.CMPA = PWM_CMP;
 
     EPwm1Regs.TBCTL.bit.CTRMODE = 2; // Count-up mode, start the counter
 
@@ -42,7 +54,7 @@ void Epwm2Init()
     EPwm2Regs.DBCTL.bit.POLSEL = 2;
     EPwm2Regs.DBCTL.bit.OUT_MODE = 3;
 
-    EPwm2Regs.CMPA.bit.CMPA = 2000;
+    EPwm2Regs.CMPA.bit.CMPA = PWM_CMP;
 
     EPwm2Regs.TBCTL.bit.CTRMODE = 2;
 
@@ -68,9 +80,8 @@ void Epwm3Init()
     EPwm3Regs.DBCTL.bit.IN_MODE = 0;
     EPwm3Regs.DBCTL.bit.POLSEL = 2;
     EPwm3Regs.DBCTL.bit.OUT_MODE = 3;
-    EPwm3Regs.DBCTL.bit.OUTSWAP = 3;
 
-    EPwm3Regs.CMPA.bit.CMPA = 2000;
+    EPwm3Regs.CMPA.bit.CMPA = PWM_CMP;
 
     EPwm3Regs.TBCTL.bit.CTRMODE = 2;
 

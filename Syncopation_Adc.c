@@ -238,6 +238,9 @@ Uint16 state = 0;
 
 Uint16 fault_status = 0;
 
+Uint16 led_count = 0;
+extern Uint16 *fpga_led;
+
 interrupt void ControlLoop(void)
 {
     AdcResult[0]  = AdcaResultRegs.ADCRESULT0;
@@ -268,6 +271,13 @@ interrupt void ControlLoop(void)
 
     Dab_Update();
 
+    led_count++;
+    if(led_count>=20000)
+    {
+        led_count = 0;
+//        GpioDataRegs.GPDTOGGLE.bit.GPIO109 = 1;
+        (*fpga_led) ^= 1;
+    }
 
     AdcaRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;	//Clear ADCINT1 flag reinitialize for next SOC
 	PieCtrlRegs.PIEACK.bit.ACK1 = 1;

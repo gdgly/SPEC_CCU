@@ -112,11 +112,22 @@ float voltage_loop(float Vdc_ref, float Vdc_filtered)
 //float i_kr = 100;
 float i_kp = 20;
 float i_kr = 50;
-float i_sogi_x1 = 0;
-float i_sogi_x2 = 0;
+float i_sogi_h1_x1 = 0;
+float i_sogi_h1_x2 = 0;
+float i_sogi_h3_x1 = 0;
+float i_sogi_h3_x2 = 0;
+float i_sogi_h5_x1 = 0;
+float i_sogi_h5_x2 = 0;
+float i_sogi_h7_x1 = 0;
+float i_sogi_h7_x2 = 0;
+
+
 float i_dc_offset_inte = 0;
 float i_sogi_error;
 float i_omega_h1_T;
+float i_omega_h3_T;
+float i_omega_h5_T;
+float i_omega_h7_T;
 // End of I_loop_variables
 
 //void current_loop_pr(float arg_2, float arg_3)
@@ -129,19 +140,40 @@ float i_omega_h1_T;
 float current_loop(float Iac_ref, float Iac, float Freq)
 {
     i_omega_h1_T = Freq * TS;
+    i_omega_h3_T = 3 * Freq * TS;
+    i_omega_h5_T = 5 * Freq * TS;
+    i_omega_h7_T = 7 * Freq * TS;
 
     float i_sogi_h1_x1_n;
     float i_sogi_h1_x2_n;
+    float i_sogi_h3_x1_n;
+    float i_sogi_h3_x2_n;
+    float i_sogi_h5_x1_n;
+    float i_sogi_h5_x2_n;
+    float i_sogi_h7_x1_n;
+    float i_sogi_h7_x2_n;
 
     i_sogi_error = -Iac_ref + Iac;
 
-    i_sogi_h1_x1_n = __cospuf32(i_omega_h1_T) * i_sogi_x1 - __sinpuf32(i_omega_h1_T) * i_sogi_x2 + TS * 377 * i_sogi_error;
-    i_sogi_h1_x2_n = __sinpuf32(i_omega_h1_T) * i_sogi_x1 + __cospuf32(i_omega_h1_T) * i_sogi_x2;
+    i_sogi_h1_x1_n = __cospuf32(i_omega_h1_T) * i_sogi_h1_x1 - __sinpuf32(i_omega_h1_T) * i_sogi_h1_x2 + TS * 377 * i_sogi_error;
+    i_sogi_h1_x2_n = __sinpuf32(i_omega_h1_T) * i_sogi_h1_x1 + __cospuf32(i_omega_h1_T) * i_sogi_h1_x2;
+    i_sogi_h3_x1_n = __cospuf32(i_omega_h3_T) * i_sogi_h3_x1 - __sinpuf32(i_omega_h3_T) * i_sogi_h3_x2 + 3 * TS * 377 * i_sogi_error;
+    i_sogi_h3_x2_n = __sinpuf32(i_omega_h3_T) * i_sogi_h3_x1 + __cospuf32(i_omega_h3_T) * i_sogi_h3_x2;
+    i_sogi_h5_x1_n = __cospuf32(i_omega_h5_T) * i_sogi_h5_x1 - __sinpuf32(i_omega_h5_T) * i_sogi_h5_x2 + 5 * TS * 377 * i_sogi_error;
+    i_sogi_h5_x2_n = __sinpuf32(i_omega_h5_T) * i_sogi_h5_x1 + __cospuf32(i_omega_h5_T) * i_sogi_h5_x2;
+    i_sogi_h7_x1_n = __cospuf32(i_omega_h7_T) * i_sogi_h7_x1 - __sinpuf32(i_omega_h7_T) * i_sogi_h7_x2 + 7 * TS * 377 * i_sogi_error;
+    i_sogi_h7_x2_n = __sinpuf32(i_omega_h7_T) * i_sogi_h7_x1 + __cospuf32(i_omega_h7_T) * i_sogi_h7_x2;
 
-    i_sogi_x1 = i_sogi_h1_x1_n;
-    i_sogi_x2 = i_sogi_h1_x2_n;
+    i_sogi_h1_x1 = i_sogi_h1_x1_n;
+    i_sogi_h1_x2 = i_sogi_h1_x2_n;
+    i_sogi_h3_x1 = i_sogi_h3_x1_n;
+    i_sogi_h3_x2 = i_sogi_h3_x2_n;
+    i_sogi_h5_x1 = i_sogi_h5_x1_n;
+    i_sogi_h5_x2 = i_sogi_h5_x2_n;
+    i_sogi_h7_x1 = i_sogi_h7_x1_n;
+    i_sogi_h7_x2 = i_sogi_h7_x2_n;
 
-    float Vac_ref = i_kp * i_sogi_error + i_kr * i_sogi_x1;
+    float Vac_ref = i_kp * i_sogi_error + i_kr * (i_sogi_h1_x1 + 0.01 * (i_sogi_h3_x1 + i_sogi_h5_x1 + i_sogi_h7_x1));
 
     return Vac_ref;
 }
@@ -154,8 +186,14 @@ float Vac_ref = 0;
 
 void ResetState()
 {
-    i_sogi_x1 = 0;
-    i_sogi_x2 = 0;
+    i_sogi_h1_x1 = 0;
+    i_sogi_h1_x2 = 0;
+    i_sogi_h3_x1 = 0;
+    i_sogi_h3_x2 = 0;
+    i_sogi_h5_x1 = 0;
+    i_sogi_h5_x2 = 0;
+    i_sogi_h7_x1 = 0;
+    i_sogi_h7_x2 = 0;
     i_dc_offset_inte = 0;
 
     v_loop_inte = 0;
@@ -167,7 +205,7 @@ void ResetState()
 
 extern Uint16 chb_state;
 
-Uint16 trigger_state = 0;
+Uint16 trigger_state = 1;
 Uint16 trigger_count = 0;
 Uint16 trigger_limit = 4000;
 
@@ -212,20 +250,21 @@ float ChbControl(float Vac, float Vdc_sec, float Iac)
         Vac_ref = current_loop(Iac_ref, Iac, Grid_Freq);
     }
 
-//    if(trigger_state == 1)
-//    {
-//        DataLog_Logging(trigger_count, Vac, Vac_ref, Iac, Iac_ref);
-//
-//        trigger_count++;
-//        if(trigger_count>=trigger_limit)
-//        {
+    if(trigger_state == 1)
+    {
+        DataLog_Logging(trigger_count, Vac, Vac_ref, Iac, Vdc_sec);
+
+        trigger_count++;
+        if(trigger_count>=trigger_limit)
+        {
 //            if(chb_state!=3)
 //                chb_state = 1;
-//            trigger_state = 0;
+            trigger_state = 0;
+            trigger_count = 0;
 //            ResetState();
-//            DataLog_StartToSend(trigger_limit);
-//        }
-//    }
+            DataLog_StartToSend(trigger_limit);
+        }
+    }
     return Vac_ref;
 }
 

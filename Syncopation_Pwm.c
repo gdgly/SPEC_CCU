@@ -70,10 +70,24 @@ void Epwm4Init()
 
     EPwm4Regs.AQCTLA.bit.CAU = 1; // Clear output A at TBCTR = CMPA
     EPwm4Regs.AQCTLA.bit.ZRO = 2; // Set output A at TBCTR = 0
-    EPwm4Regs.CMPA.bit.CMPA = 1000;
-    EPwm4Regs.TBPHS.bit.TBPHS = 3000;
+    EPwm4Regs.CMPA.bit.CMPA = 2000;
 
     EPwm4Regs.TBCTL.bit.CTRMODE = 0; // Count-up mode, start the counter
+}
+
+void Epwm5Init()
+{
+    EPwm5Regs.TBPRD = PWM_PERIOD - 1;
+
+    EPwm5Regs.TBCTL.bit.SYNCOSEL = 0;
+    EPwm5Regs.TBCTL.bit.PHSEN = 1;
+    EPwm5Regs.TBCTL.bit.HSPCLKDIV = 0;
+
+    EPwm5Regs.AQCTLA.bit.CAU = 1; // Clear output A at TBCTR = CMPA
+    EPwm5Regs.AQCTLA.bit.ZRO = 2; // Set output A at TBCTR = 0
+    EPwm5Regs.CMPA.bit.CMPA = 2000;
+
+    EPwm5Regs.TBCTL.bit.CTRMODE = 0; // Count-up mode, start the counter
 }
 
 void EpwmInit()
@@ -82,5 +96,6 @@ void EpwmInit()
     Epwm2Init();
     Epwm3Init();
     Epwm4Init();
+    Epwm5Init();
 }
 

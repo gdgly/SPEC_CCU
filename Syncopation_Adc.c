@@ -9,6 +9,10 @@
 #include "Syncopation_Data.h"
 #include "Syncopation_Pwm.h"
 
+#define DSP_LED_1_OFF       GpioDataRegs.GPDSET.bit.GPIO109 = 1
+#define DSP_LED_1_ON        GpioDataRegs.GPDCLEAR.bit.GPIO109 = 1
+#define DSP_LED_1_TGL       GpioDataRegs.GPDTOGGLE.bit.GPIO109 = 1
+
 #define SAMPLE_WINDOW 49
 #define ADC_TRIG_SELECT  5  // EPWM1 SOCA
 
@@ -221,20 +225,28 @@ void Adc_D_Init()
 
 #pragma CODE_SECTION(ControlLoop, ".TI.ramfunc");
 
+Uint16 led_counter = 0;
+Uint16 led_state = 0;
+
 Uint16 AdcResult[24];
 Uint16 TempSensor;
 
 Uint16 vac_reading = 0;
 Uint16 vdc_reading = 0;
 Uint16 iac_reading = 0;
+Uint16 vac_sec_reading = 0;
 
 extern float SinglePhasePLL(float Vac, float *Freq, float *Vac_amp);
 
-float Vac,Iac,Vdc_sec;
+float Vac,Iac,Vdc_sec,Vac_sec;
+
+float Iac_sec_ref = 0;
+Uint16 inverter_status = 0;
 
 Uint16 index = 0;
 
 Uint16 chb_state = 1;
+
 #define STATE_CHB_INIT      0
 #define STATE_CHB_STANDBY   1
 #define STATE_CHB_NORMAL    2
@@ -282,6 +294,7 @@ interrupt void ControlLoop(void)
 
     vdc_reading = AdcResult[0];
     vac_reading = AdcResult[1];
+    vac_sec_reading = AdcResult[2];
     iac_reading = AdcResult[3];
 
     Vac = -0.49082395 * vac_reading + 1008.833;
@@ -289,7 +302,28 @@ interrupt void ControlLoop(void)
 //    Iac = 0.010835907 * iac_reading - 22.111420183;
     Vdc_sec = -0.49082395 * vdc_reading + 994.733;
 
+    Vac_sec = -0.49082395 * vac_sec_reading + 1008.833;
+
     Chb_Vac_ref = ChbControl(Vac, Vdc_sec, Iac);
+
+    led_counter++;
+    if(led_counter >= 50000)
+    {
+        led_counter = 0;
+        if(led_state == 0)
+        {
+            DSP_LED_1_ON;
+            led_state = 1;
+//            ChbSetDuty(300);
+        }
+        else
+        {
+            DSP_LED_1_OFF;
+            led_state = 0;
+//            ChbSetDuty(-300);
+        }
+    }
+
 
     switch(chb_state)
     {
@@ -299,6 +333,13 @@ interrupt void ControlLoop(void)
     case STATE_CHB_FAULT:   ChbFault();         break;
     default: ChbFault();  break;
     }
+
+    if(inverter_status == 0)
+        EPwm4Regs.CMPA.bit.CMPA = 40;
+    else
+        EPwm4Regs.CMPA.bit.CMPA = (Uint16)(Iac_sec_ref * 50 + 2000);
+
+    EPwm5Regs.CMPA.bit.CMPA = (Uint16)(Vac_sec * 4 + 2000);
 
     AdcaRegs.ADCINTFLGCLR.bit.ADCINT1 = 1;	//Clear ADCINT1 flag reinitialize for next SOC
 	PieCtrlRegs.PIEACK.bit.ACK1 = 1;
@@ -322,7 +363,6 @@ void ChbInit()
     EPwm1Regs.CMPA.bit.CMPA = 80;
     EPwm2Regs.CMPA.bit.CMPA = 80;
     EPwm3Regs.CMPA.bit.CMPA = 80;
-    EPwm4Regs.CMPA.bit.CMPA = 80;
 }
 
 void ChbStandby()
@@ -330,7 +370,6 @@ void ChbStandby()
     EPwm1Regs.CMPA.bit.CMPA = 80;
     EPwm2Regs.CMPA.bit.CMPA = 80;
     EPwm3Regs.CMPA.bit.CMPA = 80;
-    EPwm4Regs.CMPA.bit.CMPA = 80;
 }
 
 void ChbSetDuty(float vac_ref)
@@ -343,7 +382,6 @@ void ChbSetDuty(float vac_ref)
     EPwm1Regs.CMPA.bit.CMPA = cmp_value;
     EPwm2Regs.CMPA.bit.CMPA = cmp_value;
     EPwm3Regs.CMPA.bit.CMPA = cmp_value;
-    EPwm4Regs.CMPA.bit.CMPA = cmp_value;
 }
 
 void ChbFault()
@@ -353,5 +391,23 @@ void ChbFault()
     EPwm1Regs.CMPA.bit.CMPA = 40;
     EPwm2Regs.CMPA.bit.CMPA = 40;
     EPwm3Regs.CMPA.bit.CMPA = 40;
-    EPwm4Regs.CMPA.bit.CMPA = 40;
+}
+
+void Inv_on()
+{
+    inverter_status = 1;
+}
+
+void Inv_off()
+{
+    inverter_status = 0;
+}
+
+void Inv_I_set(float arg)
+{
+    Iac_sec_ref = arg;
+    if(Iac_sec_ref > 15)
+        Iac_sec_ref = 15;
+    if(Iac_sec_ref < -15)
+        Iac_sec_ref = -15;
 }

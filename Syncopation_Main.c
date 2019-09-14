@@ -60,26 +60,26 @@ void main(void) {
     CpuTimer1Regs.TCR.bit.TIF = 1;
     CpuTimer1Regs.TCR.all = 0x4000;
 
-    DSP_LED_1_ON;
-    DSP_LED_2_OFF;
+    DSP_LED_1_OFF;
+    DSP_LED_2_ON;
 
     while(1)
     {
         DELAY_US(4000);
 
-        SCI_UpdatePacketFloat(0, Vac);
-        SCI_UpdatePacketFloat(1, Iac);
-        SCI_UpdatePacketFloat(2, Vdc_sec);
-        SCI_UpdatePacketFloat(3, omega_h1);
-
+//        SCI_UpdatePacketFloat(0, Vac);
+//        SCI_UpdatePacketFloat(1, Iac);
+//        SCI_UpdatePacketFloat(2, Vdc_sec);
+//        SCI_UpdatePacketFloat(3, omega_h1);
+//
         SCI_UpdatePacketInt16(0, *((Uint16 *)0x00100021));
         SCI_UpdatePacketInt16(1, fault_value);
         SCI_UpdatePacketInt16(2, chb_state);
         SCI_UpdatePacketInt16(3, fault_prepare_state);
+//
+//        SCI_SendPacket();
 
-        SCI_SendPacket();
-
-//        DataLog_ISR();
+        DataLog_ISR();
     }
 }
 

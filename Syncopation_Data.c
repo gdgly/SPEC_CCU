@@ -37,6 +37,8 @@ void DataLog_Logging(Uint16 index, float ch1, float ch2, float ch3, float ch4)
     }
 }
 
+extern Uint16 trigger_state;
+
 void DataLog_SendSample()
 {
     if(DataLog_index < DataLog_send_size)
@@ -52,6 +54,7 @@ void DataLog_SendSample()
     {
         DataLog_index = 0;
         DataLog_state = 0;
+        trigger_state = 1;
     }
 }
 
